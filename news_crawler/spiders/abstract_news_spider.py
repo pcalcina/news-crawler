@@ -8,7 +8,7 @@ import sys
 
 from scrapy.contrib.spiders import CrawlSpider, Rule
 from scrapy.contrib.linkextractors import LinkExtractor
-from folha_crawler.items import NewsItem
+from news_crawler.items import NewsItem
 
 class AbstractNewsSpider(CrawlSpider):
     __metaclass__       = abc.ABCMeta
