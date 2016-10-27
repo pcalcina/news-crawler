@@ -19,15 +19,15 @@ class AbstractNewsSpider(CrawlSpider):
     title_pages         = {}
     keywords            = ''
     conn                = None
-    accept_new_articles = False
+    accept_new_articles = True
     
-    def __init__(self, domain, source_id, keywords, database):
+    def __init__(self, domain, source_id, database, keywords):
         self.allowed_domains = [domain]            
         self.source_id       = source_id
         self.keywords        = keywords
         self.start_urls      = [self.start_url()]
-        self.conn = sqlite3.connect(database)
-        self.cursor = self.conn.cursor()
+        self.conn            = sqlite3.connect(database)
+        self.cursor          = self.conn.cursor()
         
     def parse(self, response):
         if self.final_page is None:
@@ -39,9 +39,8 @@ class AbstractNewsSpider(CrawlSpider):
         if self.has_more_pages():
             i = 0
             for article_link in self.get_article_links(response):                
-                i+=1
+                i += 1
                 url = self.get_url(article_link)
-
                 if url:                
                     if self.already_crawled(url):
                         print '[%d-2%d MERGING OLD] %s' % (self.next_page, i, url)
@@ -56,7 +55,6 @@ class AbstractNewsSpider(CrawlSpider):
                                    (url, e))
                     else:
                         print '[%d-2%d SKIPPING NEW] %s' % (self.next_page, i, url)
-                                         
             yield scrapy.Request(self.get_next_page_url(), callback=self.parse)
             self.next_page += 1
             
@@ -90,6 +88,7 @@ class AbstractNewsSpider(CrawlSpider):
         """Return the URL of the next page to crawl."""
 
     def parse_article(self, response):
+        print " **** RECEIVING %s ti save **** " % (str(response))
         item = NewsItem()
         item['date']      = self.get_date(response)
         item['body']      = self.get_body(response)
@@ -104,6 +103,7 @@ class AbstractNewsSpider(CrawlSpider):
             'SELECT count(*) AS total FROM news WHERE news.url_suffix = ?',
             [self.get_url_suffix(url)])
         [total] = self.cursor.fetchone()
+        print "Verifying if %s URL is crawled, total = %d" % (url, total)
         return total > 0
     
     def merge_keywords(self, url):

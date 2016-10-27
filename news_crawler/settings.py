@@ -12,7 +12,7 @@ BOT_NAME = 'news_crawler'
 LOG_LEVEL = 'INFO'
 SPIDER_MODULES = ['news_crawler.spiders']
 NEWSPIDER_MODULE = 'news_crawler.spiders'
-ITEM_PIPELINES = ['news_crawler.pipelines.FolhaCrawlerPipeline']
+ITEM_PIPELINES = {'news_crawler.pipelines.FolhaCrawlerPipeline' : 300}
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'news_crawler (+http://www.yourdomain.com)'

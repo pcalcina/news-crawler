@@ -4,18 +4,22 @@ from abstract_news_spider import AbstractNewsSpider
 
 class FolhaSpider(AbstractNewsSpider):
     name         = 'folha-spider'
-    initial_date = '01%2F01%2F2013'
-    final_date   = '22%2F09%2F2014'
     url_template = ('http://busca.folha.uol.com.br/search?' +
                     'q=%s&site=%s&sd=%s&ed=%s&sr=%s')
-    site         = 'jornal'
+    site         = 'todos'
     source_id    = 2
     first_item   = 1
-    #jornal = 2, online = 1
+    initial_date = ''
+    final_date   = ''
 
-    def __init__(self):        
+    def __init__(self, 
+                 keywords     = '', 
+                 initial_date = '01%2F01%2F2013', 
+                 final_date   = '22%2F09%2F2014'):        
         super(FolhaSpider, self).__init__(
-            'folha.uol.com.br', self.source_id, 'pro-life', r'protestos.sqlite')
+            'folha.uol.com.br', self.source_id, r'protestos.sqlite', keywords)
+        self.initial_date = initial_date
+        self.final_date   = final_date
     
     def get_total_articles(self, response):
         path = response.selector.css(".search-title > span").xpath('./node()')
@@ -24,9 +28,7 @@ class FolhaSpider(AbstractNewsSpider):
 
     def get_article_links(self, response):
         css_path = '.search-results-list .search-results-title a'
-#        css_path = '.search-results-title > a'
         return response.selector.css(css_path)
-
         
     def get_body(self, response):
         selector = '.article [itemprop=articleBody]'
@@ -47,32 +49,30 @@ class FolhaSpider(AbstractNewsSpider):
                                      
     
     def start_url(self):
-         return self.url_template % (self.keywords, 
+        return self.url_template % (self.keywords, 
                                      self.site,
                                      self.initial_date, 
                                      self.final_date,
                                      self.first_item)
     
     def get_title(self, response):
-        title = ''
+        title = 'NO TITLE'
         xpath_alternatives = [
+            '//article/header/h1/text()',
             '//html/body/meta[@itemprop="alternativeHeadline"]/@content',
             '//html/head/meta[@name="title"]/@content',
             '//div[@id="articleNew"]/h1/text()',
             '//p[@class="title"]/text()']
-        
         for xpath in xpath_alternatives:            
             items = response.xpath(xpath).extract()
             if items:
                 title = items[0]
-                break
-        
+                break        
         return title
         
     def format_date(self, date_text):
         date = None
         matches = re.match('(\d{2})/(\d{2})/(\d{4}).*', date_text)
-
         if matches:
             (dd, mm, yy) = matches.groups()
             date = '%s-%s-%s' % (yy, mm, dd)
@@ -80,25 +80,23 @@ class FolhaSpider(AbstractNewsSpider):
             matches = re.match('(\d{4}-\d{2}-\d{2}).*', date_text)
             if matches:
                 date = matches.group(0)
-        
         return date
 
     def get_date(self, response):
         xpath_alternatives = [
+            '//div[@id="articleNew"]/p[@class="publish"]/text()',
+            '//article/header/time/text()',
             '//html/body/meta[@itemprop="datePublished"]/@content',
             '//div[@id="articleDate"]/text()',
             '//html/head/meta[@name="date"]/@content']
         date = 'No date'
-
         for xpath in xpath_alternatives:
             items = response.xpath(xpath).extract()
-
             if items:
                 text  = ' '.join(items).strip()
                 date_candidate = self.format_date(text)
-                
                 if date_candidate:
                     date = date_candidate
+                    print "A data escolhida date=%s, xpath=%s" % (date, xpath)
                     break
-         
         return date
