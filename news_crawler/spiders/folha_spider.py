@@ -1,5 +1,6 @@
 import re
 import sys
+import logging
 from abstract_news_spider import AbstractNewsSpider
 
 class FolhaSpider(AbstractNewsSpider):
@@ -16,10 +17,15 @@ class FolhaSpider(AbstractNewsSpider):
                  keywords     = '', 
                  initial_date = '01%2F01%2F2013', 
                  final_date   = '22%2F09%2F2014'):        
-        super(FolhaSpider, self).__init__(
-            'folha.uol.com.br', self.source_id, r'protestos.sqlite', keywords)
+        super(FolhaSpider, self).__init__( 'folha.uol.com.br',
+                                           self.source_id,
+                                           r'protestos.sqlite',
+                                           keywords,
+                                           self.start_url(keywords,
+                                                          initial_date, final_date))
         self.initial_date = initial_date
         self.final_date   = final_date
+        logging.info('FolhaSpider: INITIAL:%s, END:%s' %(self.initial_date, self.final_date))
     
     def get_total_articles(self, response):
         path = response.selector.css(".search-title > span").xpath('./node()')
@@ -48,12 +54,14 @@ class FolhaSpider(AbstractNewsSpider):
         return url
                                      
     
-    def start_url(self):
-        return self.url_template % (self.keywords, 
+    def start_url(self, keywords, initial_date, final_date):
+        initial_url = self.url_template % (keywords, 
                                      self.site,
-                                     self.initial_date, 
-                                     self.final_date,
+                                     initial_date, 
+                                     final_date,
                                      self.first_item)
+        logging.info('Returning initial url: %s' %(initial_url))
+        return initial_url
     
     def get_title(self, response):
         title = 'NO TITLE'
