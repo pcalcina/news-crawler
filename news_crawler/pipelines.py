@@ -12,7 +12,7 @@ class FolhaCrawlerPipeline(object):
 
     def process_item(self, item, spider):
         if item['date'] != 'No date':        
-            domain = 'http://www.folha.uol.com.br'
+            domain = 'http://www1.folha.uol.com.br'
             default_status_id = 6
             conn = sqlite3.connect('protestos.sqlite')
             cursor = conn.cursor()
