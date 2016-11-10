@@ -7,16 +7,16 @@ class FolhaSpider(AbstractNewsSpider):
     name         = 'folha-spider'
     url_template = ('http://busca.folha.uol.com.br/search?' +
                     'q=%s&site=%s&sd=%s&ed=%s&sr=%s')
-    site         = 'todos'
-    source_id    = 2
+    site         = 'online'
+    source_id    = 1
     first_item   = 1
     initial_date = ''
     final_date   = ''
 
     def __init__(self, 
                  keywords     = '', 
-                 initial_date = '01%2F01%2F2013', 
-                 final_date   = '22%2F09%2F2014'):        
+                 initial_date = '01%2F01%2F2014', 
+                 final_date   = '22%2F09%2F2015'):        
         super(FolhaSpider, self).__init__( 'folha.uol.com.br',
                                            self.source_id,
                                            r'protestos.sqlite',

@@ -10,6 +10,7 @@ import scrapy
 class NewsItem(scrapy.Item):
     title     = scrapy.Field()
     link      = scrapy.Field()
+    full_link = scrapy.Field()
     body      = scrapy.Field()
     date      = scrapy.Field()
     source_id = scrapy.Field()

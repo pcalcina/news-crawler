@@ -97,6 +97,7 @@ class AbstractNewsSpider(CrawlSpider):
         item['body']      = self.get_body(response)
         item['title']     = self.get_title(response)
         item['link']      = self.get_url_suffix(response.url)
+        item['full_link'] = response.url
         item['source_id'] = self.source_id
         item['keywords']  = self.keywords
         return item
