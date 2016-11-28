@@ -15,8 +15,8 @@ class FolhaSpider(AbstractNewsSpider):
 
     def __init__(self, 
                  keywords     = '', 
-                 initial_date = '01%2F01%2F2014', 
-                 final_date   = '22%2F09%2F2015'):        
+                 initial_date = '16%2F12%2F2015', 
+                 final_date   = '18%2F12%2F2015'):        
         super(FolhaSpider, self).__init__( 'folha.uol.com.br',
                                            self.source_id,
                                            r'protestos.sqlite',
@@ -29,7 +29,7 @@ class FolhaSpider(AbstractNewsSpider):
     
     def get_total_articles(self, response):
         path = response.selector.css(".search-title > span").xpath('./node()')
-        text = str(path[0].extract())
+        text = str(path[0].extract()).strip()
         return int(re.match(r".(\d+) - (\d+) de (\d+).", text).group(3))
 
     def get_article_links(self, response):
